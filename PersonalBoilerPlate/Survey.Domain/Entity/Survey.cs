@@ -5,7 +5,7 @@ using Survey.Shared.Abstractions.Domain;
 
 namespace Survey.Domain.Entity
 {
-    public class Survey:BaseEntityIdentity<Guid,Guid>
+    public class Survey:AuditableEntity
     {
         public string Title
         {

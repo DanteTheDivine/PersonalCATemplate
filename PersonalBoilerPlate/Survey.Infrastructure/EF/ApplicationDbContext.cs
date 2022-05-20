@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Survey.Application.Common;
 using Survey.Domain.Entity;
 using Survey.Infrastructure.Identity;
+using Survey.Shared.Abstractions;
 using Survey.Shared.Abstractions.Domain;
 
 namespace Survey.Infrastructure.EF
@@ -23,12 +26,13 @@ namespace Survey.Infrastructure.EF
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            foreach (var entityEntry in ChangeTracker.Entries<BaseEntityIdentity>())
+            foreach (var entityEntry in ChangeTracker.Entries<AuditableEntity>())
             {
                 switch (entityEntry.State)
                 {
                     case EntityState.Added:
-                        entityEntry.Entity.UserId = _userService.UserId; break;
+                        entityEntry.Entity.CreatedBy = _userService.UserId; 
+                        entityEntry.Entity.CreatedDateTime=DateTime.UtcNow;break;
                 }
             }
             var result = await base.SaveChangesAsync(cancellationToken);
